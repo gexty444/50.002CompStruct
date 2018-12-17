@@ -1,0 +1,24 @@
+.include "50002/nominal.jsim" 
+.include "50002/stdcell.jsim" 
+.include "50002/lab6pc.jsim"
+
+* Full Adder Module
+.subckt FA a b ci s co
+Xxor1 a b 1 xor2
+Xxor2 1 ci s xor2
+Xnand1 a b 2 nand2
+Xnand2 a ci 3 nand2
+Xnand3 b ci 4 nand2
+Xnand4 2 3 4 co nand3
+.ends
+
+
+
+* PC
+.subckt pc clk reset ia[31:0]
+Xpc1 ia[1:0] 0#2 0#1 co[0] s[1:0] co[1:0] FA
+Xpc2 ia[2] vdd co[1] s[2] co[2] FA 	//PC+4; 4 is 100 in binary
+Xpc3 ia[31:3] 0#29 co[30:2] s[31:3] co[31:3] FA
+Xmux reset#32 s[31:0] 0#32 pc[31:0] mux2		// when RESET=1, give all 0s
+Xdreg pc[31:0] clk#32 ia[31:0] dreg   //D=output from mux; Q=output of subckt
+.ends

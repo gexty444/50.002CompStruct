@@ -1,0 +1,16 @@
+.include "50002/nominal.jsim"
+.include "50002/lab1checkoff.jsim"
+
+.subckt F A B C Z
+MPDA 3 A 2 0 NENH sw=8 sl=1   // series with B but parallel to C
+MPDB 2 B 0 0 NENH sw=8 sl=1   // series with A
+MPDC 3 C 0 0 NENH sw=8 sl=1
+MPUC 1 C vdd vdd PENH sw=8 sl=1   // series with A||B
+MPUA 3 A 1 vdd PENH sw=8 sl=1     // parallel with B
+MPUB 3 B 1 vdd PENH sw=8 sl=1     
+
+MPD1 Z 3 0 0 NENH sw=16 sl=1   // inverter at the end
+MPU1 Z 3 vdd vdd PENH sw=16 sl=1 
+.ends
+
+

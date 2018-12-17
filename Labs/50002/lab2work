@@ -1,0 +1,69 @@
+* nd ng ns nb
+
+.include "50002/nominal.jsim"
+.include "50002/8clocks.jsim"
+.include "50002/lab2checkoff.jsim"
+
+* INVERTER
+.subckt inv a z
+MPU z a vdd vdd PENH sw=16 sl=1
+MPD z a 0 0 NENH sw=16 sl=1
+.ends
+
+* 2-input NAND
+.subckt nand2 a b z
+MPU1 z a vdd vdd PENH sw=8 sl=1
+MPU2 z b vdd vdd PENH sw=8 sl=1
+MPD1 z a 1 0 NENH sw=8 sl=1
+MPD2 1 b 0 0 NENH sw=8 sl=1
+.ends
+
+* 2-input NOR
+.subckt nor a b z
+MPU1 1 a vdd vdd PENH sw=8 sl=1
+MPU2 z b 1 vdd PENH sw=8 sl=1
+MPD1 z a 0 0 NENH sw=8 sl=1
+MPD2 z b 0 0 NENH sw=8 sl=1
+.ends
+
+* 3-input NAND
+.subckt nand3 a b c z
+MPU1 z a vdd vdd PENH sw=8 sl=1
+MPU2 z b vdd vdd PENH sw=8 sl=1
+MPU3 z c vdd vdd PENH sw=8 sl=1
+MPD1 z a 2 0 NENH sw=8 sl=1
+MPD2 2 b 1 0 NENH sw=8 sl=1
+MPD3 1 c 0 0 NENH sw=8 sl=1
+.ends
+
+* 2-input XOR
+.subckt xor a b z
+Xnor a b 1 nor
+MPU1 2 a vdd vdd PENH sw=8 sl=1
+MPU2 z 1 2 vdd PENH sw=8 sl=1
+MPU3 2 b vdd vdd PENH sw=8 sl=1
+MPD1 z a 3 0 NENH sw=8 sl=1
+MPD2 3 b 0 0 NENH sw=8 sl=1
+MPD3 z 1 0 0 NENH sw=8 sl=1
+.ends
+
+.options vih=2.6 vil=0.6
+
+
+.subckt FA a b ci s co
+Xxor1 a b 1 xor
+Xxor2 1 ci s xor
+Xnand1 a b 2 nand2
+Xnand2 a ci 3 nand2
+Xnand3 b ci 4 nand2
+Xnand4 2 3 4 co nand3
+.ends
+
+.subckt ADDER4 a3 a2 a1 a0 b3 b2 b1 b0 s4 s3 s2 s1 s0
+* remember the node named "0" is the ground node
+* nodes c0 through c3 are internal to the ADDER module
+Xbit0 a0 b0 0 s0 c0 FA
+Xbit1 a1 b1 c0 s1 c1 FA
+Xbit2 a2 b2 c1 s2 c2 FA
+Xbit3 a3 b3 c2 s3 s4 FA
+.ends

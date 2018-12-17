@@ -1,0 +1,236 @@
+.include "50002/nominal.jsim"
+.include "50002/stdcell.jsim"
+.include "50002/lab3checkoff_10.jsim"
+
+
+* Full Adder Module
+.subckt FA a b ci s co
+Xxor1 a b 1 xor2
+Xxor2 1 ci s xor2
+Xnand1 a b 2 nand2
+Xnand2 a ci 3 nand2
+Xnand3 b ci 4 nand2
+Xnand4 2 3 4 co nand3
+.ends
+
+.subckt multiply32 A[31:0] B[31:0] out[31:0]
+Xand1 A[0] B[0] out[0] and2
+Xand2 A[31:1] B[0]#31 out1X[31:1] and2
+Xand3 A[30:0] B[1]#31 out1Y[30:0] and2
+Xfa1 out1X[1] out1Y[0] 0 out[1] carryA[0] FA
+Xfa2 out1X[31:2] out1Y[30:1] carryA[29:0] out2X[30:1] carryA[30:1] FA
+
+Xand4 A[29:0] B[2]#30 out2Y[29:0] and2
+Xfa3 out2X[1] out2Y[0] 0 out[2] carryB[0] FA
+Xfa4 out2X[30:2] out2Y[29:1] carryB[28:0] out3X[29:1] carryB[29:1] FA
+
+Xand5 A[28:0] B[3]#29 out3Y[28:0] and2
+Xfa5 out3X[1] out3Y[0] 0 out[3] carryC[0] FA
+Xfa6 out3X[29:2] out3Y[28:1] carryC[27:0] out4X[28:1] carryC[28:1] FA
+
+Xand6 A[27:0] B[4]#28 out4Y[27:0] and2
+Xfa7 out4X[1] out4Y[0] 0 out[4] carryD[0] FA
+Xfa8 out4X[28:2] out4Y[27:1] carryD[26:0] out5X[27:1] carryD[27:1] FA
+
+Xand7 A[26:0] B[5]#27 out5Y[26:0] and2
+Xfa9 out5X[1] out5Y[0] 0 out[5] carryE[0] FA
+Xfa10 out5X[27:2] out5Y[26:1] carryE[25:0] out6X[26:1] carryE[26:1] FA
+
+Xand8 A[25:0] B[6]#26 out6Y[25:0] and2
+Xfa11 out6X[1] out6Y[0] 0 out[6] carryF[0] FA
+Xfa12 out6X[26:2] out6Y[25:1] carryF[24:0] out7X[25:1] carryF[25:1] FA
+
+Xand9 A[24:0] B[7]#25 out7Y[24:0] and2
+Xfa13 out7X[1] out7Y[0] 0 out[7] carryG[0] FA
+Xfa14 out7X[25:2] out7Y[24:1] carryG[23:0] out8X[24:1] carryG[24:1] FA
+
+Xand10 A[23:0] B[8]#24 out8Y[23:0] and2
+Xfa15 out8X[1] out8Y[0] 0 out[8] carryH[0] FA
+Xfa16 out8X[24:2] out8Y[23:1] carryH[22:0] out9X[23:1] carryH[23:1] FA
+
+Xand11 A[22:0] B[9]#23 out9Y[22:0] and2
+Xfa17 out9X[1] out9Y[0] 0 out[9] carryI[0] FA
+Xfa18 out9X[23:2] out9Y[22:1] carryI[21:0] out10X[22:1] carryI[22:1] FA
+
+Xand12 A[21:0] B[10]#22 out10Y[21:0] and2
+Xfa19 out10X[1] out10Y[0] 0 out[10] carryJ[0] FA
+Xfa20 out10X[22:2] out10Y[21:1] carryJ[20:0] out11X[21:1] carryJ[21:1] FA
+
+Xand13 A[20:0] B[11]#21 out11Y[20:0] and2
+Xfa21 out11X[1] out11Y[0] 0 out[11] carryK[0] FA
+Xfa22 out11X[21:2] out11Y[20:1] carryK[19:0] out12X[20:1] carryK[20:1] FA
+
+Xand14 A[19:0] B[12]#20 out12Y[19:0] and2
+Xfa23 out12X[1] out12Y[0] 0 out[12] carryL[0] FA
+Xfa24 out12X[20:2] out12Y[19:1] carryL[18:0] out13X[19:1] carryL[19:1] FA
+
+Xand15 A[18:0] B[13]#19 out13Y[18:0] and2
+Xfa25 out13X[1] out13Y[0] 0 out[13] carryM[0] FA
+Xfa26 out13X[19:2] out13Y[18:1] carryM[17:0] out14X[18:1] carryM[18:1] FA
+
+Xand16 A[17:0] B[14]#18 out14Y[17:0] and2
+Xfa27 out14X[1] out14Y[0] 0 out[14] carryN[0] FA
+Xfa28 out14X[18:2] out14Y[17:1] carryN[16:0] out15X[17:1] carryN[17:1] FA
+
+Xand17 A[16:0] B[15]#17 out15Y[16:0] and2
+Xfa29 out15X[1] out15Y[0] 0 out[15] carryO[0] FA
+Xfa30 out15X[17:2] out15Y[16:1] carryO[15:0] out16X[16:1] carryO[16:1] FA
+
+Xand18 A[15:0] B[16]#16 out16Y[15:0] and2
+Xfa31 out16X[1] out16Y[0] 0 out[16] carryP[0] FA
+Xfa32 out16X[16:2] out16Y[15:1] carryP[14:0] out17X[15:1] carryP[15:1] FA
+
+Xand19 A[14:0] B[17]#15 out17Y[14:0] and2
+Xfa33 out17X[1] out17Y[0] 0 out[17] carryQ[0] FA
+Xfa34 out17X[15:2] out17Y[14:1] carryQ[13:0] out18X[14:1] carryQ[14:1] FA
+
+Xand20 A[13:0] B[18]#14 out18Y[13:0] and2
+Xfa35 out18X[1] out18Y[0] 0 out[18] carryR[0] FA
+Xfa36 out18X[14:2] out18Y[13:1] carryR[12:0] out19X[13:1] carryR[13:1] FA
+
+Xand21 A[12:0] B[19]#13 out19Y[12:0] and2
+Xfa37 out19X[1] out19Y[0] 0 out[19] carryS[0] FA
+Xfa38 out19X[13:2] out19Y[12:1] carryS[11:0] out20X[12:1] carryS[12:1] FA
+
+Xand22 A[11:0] B[20]#12 out20Y[11:0] and2
+Xfa39 out20X[1] out20Y[0] 0 out[20] carryT[0] FA
+Xfa40 out20X[12:2] out20Y[11:1] carryT[10:0] out21X[11:1] carryT[11:1] FA
+
+Xand23 A[10:0] B[21]#11 out21Y[10:0] and2
+Xfa41 out21X[1] out21Y[0] 0 out[21] carryU[0] FA
+Xfa42 out21X[11:2] out21Y[10:1] carryU[9:0] out22X[10:1] carryU[10:1] FA
+
+Xand24 A[9:0] B[22]#10 out22Y[9:0] and2
+Xfa43 out22X[1] out22Y[0] 0 out[22] carryV[0] FA
+Xfa44 out22X[10:2] out22Y[9:1] carryV[8:0] out23X[9:1] carryV[9:1] FA
+
+Xand25 A[8:0] B[23]#9 out23Y[8:0] and2
+Xfa45 out23X[1] out23Y[0] 0 out[23] carryW[0] FA
+Xfa46 out23X[9:2] out23Y[8:1] carryW[7:0] out24X[8:1] carryW[8:1] FA
+
+Xand26 A[7:0] B[24]#8 out24Y[7:0] and2
+Xfa47 out24X[1] out24Y[0] 0 out[24] carryX[0] FA
+Xfa48 out24X[8:2] out24Y[7:1] carryX[6:0] out25X[7:1] carryX[7:1] FA
+
+Xand27 A[6:0] B[25]#7 out25Y[6:0] and2
+Xfa49 out25X[1] out25Y[0] 0 out[25] carryY[0] FA
+Xfa50 out25X[7:2] out25Y[6:1] carryY[5:0] out26X[6:1] carryY[6:1] FA
+
+Xand28 A[5:0] B[26]#6 out26Y[5:0] and2
+Xfa51 out26X[1] out26Y[0] 0 out[26] carryZ[0] FA
+Xfa52 out26X[6:2] out26Y[5:1] carryZ[4:0] out27X[5:1] carryZ[5:1] FA
+
+Xand29 A[4:0] B[27]#5 out27Y[4:0] and2
+Xfa53 out27X[1] out27Y[0] 0 out[27] carryZA[0] FA
+Xfa54 out27X[5:2] out27Y[4:1] carryZA[3:0] out28X[4:1] carryZA[4:1] FA
+
+Xand30 A[3:0] B[28]#4 out28Y[3:0] and2
+Xfa55 out28X[1] out28Y[0] 0 out[28] carryZB[0] FA
+Xfa56 out28X[4:2] out28Y[3:1] carryZB[2:0] out29X[3:1] carryZB[3:1] FA
+
+Xand31 A[2:0] B[29]#3 out29Y[2:0] and2
+Xfa57 out29X[1] out29Y[0] 0 out[29] carryZC[0] FA
+Xfa58 out29X[3:2] out29Y[2:1] carryZC[1:0] out30X[2:1] carryZC[2:1] FA
+
+Xand32 A[1:0] B[30]#2 out30Y[1:0] and2
+Xfa59 out30X[1] out30Y[0] 0 out[30] carryZD[0] FA
+Xfa60 out30X[2] out30Y[1] carryZD[0] out31X[1] carryZD[1] FA
+
+Xand33 A[0] B[31] out31Y[0] and2
+Xfa61 out31X[1] out31Y[0] 0 out[31] out32X[0] FA
+
+.ends
+
+
+.subckt alu ALUFN[5:0] A[31:0] B[31:0] alu[31:0] z v n
+Xadd ALUFN[0] A[31:0] B[31:0] s[31:0] z v n adder32
+Xmult A[31:0] B[31:0] out[31:0] multiply32
+Xmux ALUFN[1]#32 s[31:0] out[31:0] res[31:0] mux2
+Xboole ALUFN[3:0] A[31:0] B[31:0] boole[31:0] boole32
+Xshift ALUFN[1:0] A[31:0] B[4:0] shift[31:0] shift32
+Xcmp ALUFN[2:1] z v n cmp[31:0] compare32
+Xfinalmux ALUFN[5]#32 ALUFN[4]#32 res[31:0] shift[31:0] boole[31:0] cmp[31:0] alu[31:0] mux4
+.ends
+
+
+
+
+
+
+
+
+
+************************************
+.subckt shift32 ALUFN[1:0] A[31:0] B[4:0] shift[31:0]
+* leftshifting
+Xb41 B[4]#16 A[31:16] A[15:0] W[31:16] mux2
+Xb42 B[4]#16 A[15:0] 0#16 W[15:0] mux2
+Xb31 B[3]#24 W[31:8] W[23:0] X[31:8] mux2
+Xb32 B[3]#8 W[7:0] 0#8 X[7:0] mux2
+Xb21 B[2]#28 X[31:4] X[27:0] Y[31:4] mux2
+Xb22 B[2]#4 X[3:0] 0#4 Y[3:0] mux2
+Xb11 B[1]#30 Y[31:2] Y[29:0] Z[31:2] mux2
+Xb12 B[1]#2 Y[1:0] 0#2 Z[1:0] mux2
+Xb01 B[0]#31 Z[31:1] Z[30:0] SL[31:1] mux2
+Xb02 B[0] Z[0] 0 SL[0] mux2
+
+* rightshifting
+Xrb41 B[4]#16 A[31:16] 0#16 WR[31:16] mux2
+Xrb42 B[4]#16 A[15:0] A[31:16] WR[15:0] mux2
+Xrb31 B[3]#8 WR[31:24] 0#8 XR[31:24] mux2
+Xrb32 B[3]#24 WR[23:0] WR[31:8] XR[23:0] mux2
+Xrb21 B[2]#4 XR[31:28] 0#4 YR[31:28] mux2
+Xrb22 B[2]#28 XR[27:0] XR[31:4] YR[27:0] mux2
+Xrb11 B[1]#2 YR[31:30] 0#2 ZR[31:30] mux2
+Xrb12 B[1]#30 YR[29:0] YR[31:2] ZR[29:0] mux2
+Xrb01 B[0] ZR[31] 0 SR[31] mux2
+Xrb02 B[0]#31 ZR[30:0] ZR[31:1] SR[30:0] mux2
+
+* rightshifting w signext (same thing except 0 becomes the most significant bit)
+Xrab41 B[4]#16 A[31:16] A[31]#16 WA[31:16] mux2
+Xrab42 B[4]#16 A[15:0] A[31:16] WA[15:0] mux2
+Xrab31 B[3]#8 WA[31:24] WA[31]#8 XA[31:24] mux2
+Xrab32 B[3]#24 WA[23:0] WA[31:8] XA[23:0] mux2
+Xrab21 B[2]#4 XA[31:28] XA[31]#4 YA[31:28] mux2
+Xrab22 B[2]#28 XA[27:0] XA[31:4] YA[27:0] mux2
+Xrab11 B[1]#2 YA[31:30] YA[31]#2 ZA[31:30] mux2
+Xrab12 B[1]#30 YA[29:0] YA[31:2] ZA[29:0] mux2
+Xrab01 B[0] ZA[31] ZA[31] SRA[31] mux2
+Xrab02 B[0]#31 ZA[30:0] ZA[31:1] SRA[30:0] mux2
+
+*combine allllll
+Xfin ALUFN[1]#32 ALUFN[0]#32 SL[31:0] 0#32 SR[31:0] SRA[31:0] shift[31:0] mux4
+
+.ends
+
+********************************************
+.subckt boole32 ALUFN[3:0] A[31:0] B[31:0] boole[31:0]
+Xmux A[31:0] B[31:0] ALUFN[0]#32 ALUFN[1]#32 ALUFN[2]#32 ALUFN[3]#32 boole[31:0] mux4   
+.ends
+
+*******************************************
+
+.subckt compare32 ALUFN[2:1] z v n cmp[31:0]
+.connect 0 cmp[31:1]
+Xhalp n v nxorv xor2 		//nXORv
+Xhalp2 z nxorv zornxorv or2 	//z+ nXORv
+Xfin ALUFN[2] ALUFN[1] 0 nxorv z zornxorv cmp[0] mux4
+.ends
+
+***************************************
+
+.subckt adder32 ALUFN[0] A[31:0] B[31:0] s[31:0] z v n
+Xxor ALUFN[0]#32 B[31:0] res[31:0] xor2
+Xadd1 A[0] res[0] ALUFN[0] s[0] c[0] FA
+Xaddx A[31:1] res[31:1] c[30:0] s[31:1] c[31:1] FA
+Xv1 s[31] snot inverter
+Xv2 A[31] res[31] snot v1 and3
+Xv3 A[31] anot inverter
+Xv4 res[31] bnot inverter
+Xv5 anot bnot s[31] v2 and3
+Xv6 v1 v2 v or2
+.connect s[31] n
+Xz1 s[7:0] s[15:8] s[23:16] s[31:24] z1[7:0] or4 	//use OR cause output 1 if any got 1
+Xz2 z1[1:0] z1[3:2] z1[5:4] z1[7:6] z2[1:0] or4  	//reduce till 2 values
+Xz3 z2[1] z2[0] z nor2 					//use nor cause output 1 only if all 0.
+.ends

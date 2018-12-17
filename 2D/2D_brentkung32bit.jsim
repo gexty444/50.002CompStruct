@@ -1,0 +1,149 @@
+.include "C:/Users/It'sMine/Downloads/50002/nominal.jsim"
+.include "C:/Users/It'sMine/Downloads/50002/stdcell.jsim"
+.include "C:/Users/It'sMine/Downloads/50002/checkoff2d/checkoff2d/2dcheckoff_4ns.jsim"
+
+
+* calculate P & G for a given set of A & B
+.subckt makePG A B P G
+Xid0 A B P xor2
+Xid1 A B G and2
+.ends
+
+* Black cell switch and->or to nand->nand; Ga needs to be inv
+.subckt black Ga Gb Pa Pb G P
+Xid0 Ga IGa inverter
+Xid1 Pa Gb X nand2
+Xid2 X IGa G nand2
+Xid3 Pa Pb P and2
+.ends
+
+
+* Gray cell switch and->or to nand->nand; Ga needs to be inv
+.subckt gray Ga Gb Pa G
+Xid0 Ga IGa inverter
+Xid1 Gb Pa X nand2
+Xid2 IGa X G nand2
+.ends
+
+
+* Adder Function
+.subckt adder32 op0 A[31:0] B[31:0] S[31:0] z v n
+XinvB B[31:0] Binv[31:0] inverter
+XselB op0#32 B[31:0] Binv[31:0] XB[31:0] mux2
+Xid0 A[31:0] XB[31:0] P[32:1] G[32:1] makePG
+
+
+X1bit1 G[1] op0 P[1] L1G[1] gray
+X1bit3 G[3] G[2] P[3] P[2] L1G[3] L1P[3] black
+X1bit5 G[5] G[4] P[5] P[4] L1G[5] L1P[5] black
+X1bit7 G[7] G[6] P[7] P[6] L1G[7] L1P[7] black
+X1bit9 G[9] G[8] P[9] P[8] L1G[9] L1P[9] black
+X1bit11 G[11] G[10] P[11] P[10] L1G[11] L1P[11] black
+X1bit13 G[13] G[12] P[13] P[12] L1G[13] L1P[13] black
+X1bit15 G[15] G[14] P[15] P[14] L1G[15] L1P[15] black
+X1bit17 G[17] G[16] P[17] P[16] L1G[17] L1P[17] black
+X1bit19 G[19] G[18] P[19] P[18] L1G[19] L1P[19] black
+X1bit21 G[21] G[20] P[21] P[20] L1G[21] L1P[21] black
+X1bit23 G[23] G[22] P[23] P[22] L1G[23] L1P[23] black
+X1bit25 G[25] G[24] P[25] P[24] L1G[25] L1P[25] black
+X1bit27 G[27] G[26] P[27] P[26] L1G[27] L1P[27] black
+X1bit29 G[29] G[28] P[29] P[28] L1G[29] L1P[29] black
+X1bit31 G[31] G[30] P[31] P[30] L1G[31] L1P[31] black
+
+X2bit3 L1G[3] L1G[1] L1P[3] L2G[3] gray
+X2bit7 L1G[7] L1G[5] L1P[7] L1P[5] L2G[7] L2P[7] black
+X2bit11 L1G[11] L1G[9] L1P[11] L1P[9] L2G[11] L2P[11] black
+X2bit15 L1G[15] L1G[13] L1P[15] L1P[13] L2G[15] L2P[15] black
+X2bit19 L1G[19] L1G[17] L1P[19] L1P[17] L2G[19] L2P[19] black
+X2bit23 L1G[23] L1G[21] L1P[23] L1P[21] L2G[23] L2P[23] black
+X2bit27 L1G[27] L1G[25] L1P[27] L1P[25] L2G[27] L2P[27] black
+X2bit31 L1G[31] L1G[29] L1P[31] L1P[29] L2G[31] L2P[31] black
+
+X3bit7 L2G[7] L2G[3] P[7] L3G[7] gray
+X3bit15 L2G[15] L2G[11] L2P[15] L2P[11] L3G[15] L3P[15] black
+X3bit23 L2G[23] L2G[19] L2P[23] L2P[19] L3G[23] L3P[23] black
+X3bit31 L2G[31] L2G[27] L2P[31] L2P[27] L3G[31] L3P[31] black
+
+X4bit15 L3G[15] L3G[7] L3P[15] L4G[15] gray
+X4bit31 L3G[31] L3G[23] L3P[31] L3P[23] L4G[31] L4P[31] black
+
+X5bit31 L4G[31] L4G[15] L4P[31] L5G[31] gray
+
+X6bit23 L3G[23] L4G[15] L3P[23] L6G[23] gray
+
+X7bit11 L2G[11] L3G[7] L2P[11] L7G[11] gray
+X7bit19 L2G[19] L4G[15] L2P[19] L7G[19] gray
+X7bit27 L2G[27] L6G[23] L2P[27] L7G[27] gray
+
+X8bit5 L1G[5] L2G[3] L1P[5] L8G[5] gray
+X8bit9 L1G[9] L3G[7] L1P[9] L8G[9] gray
+X8bit13 L1G[13] L7G[11] L1P[13] L8G[13] gray
+X8bit17 L1G[17] L4G[15] L1P[17] L8G[17] gray
+X8bit21 L1G[21] L7G[19] L1P[21] L8G[21] gray
+X8bit25 L1G[25] L6G[23] L1P[25] L8G[25] gray
+X8bit29 L1G[29] L7G[27] L1P[29] L8G[29] gray
+
+
+X9bit2 G[2] L1G[1] P[2] L9G[2] gray
+X9bit4 G[4] L2G[3] P[4] L9G[4] gray
+X9bit6 G[6] L8G[5] P[6] L9G[6] gray
+X9bit8 G[8] L3G[7] P[8] L9G[8] gray
+X9bit10 G[10] L8G[9] P[10] L9G[10] gray
+X9bit12 G[12] L7G[11] P[12] L9G[12] gray
+X9bit14 G[14] L8G[13] P[14] L9G[14] gray
+X9bit16 G[16] L4G[15] P[16] L9G[16] gray
+X9bit18 G[18] L8G[17] P[18] L9G[18] gray
+X9bit20 G[20] L7G[19] P[20] L9G[20] gray
+X9bit22 G[22] L8G[21] P[22] L9G[22] gray
+X9bit24 G[24] L6G[23] P[24] L9G[24] gray
+X9bit26 G[26] L8G[25] P[26] L9G[26] gray
+X9bit28 G[28] L7G[27] P[28] L9G[28] gray
+X9bit30 G[30] L8G[29] P[30] L9G[30] gray
+X9bit32 G[32] L5G[31] P[32] L9G[32] gray
+
+
+.connect op0  L9G[0]	// first carry in is op0
+.connect L1G[1] L9G[1]
+.connect L2G[3] L9G[3]
+.connect L8G[5] L9G[5]
+.connect L3G[7] L9G[7]
+.connect L8G[9] L9G[9]
+.connect L7G[11] L9G[11]
+.connect L8G[13] L9G[13]
+.connect L4G[15] L9G[15]
+.connect L8G[17] L9G[17]
+.connect L7G[19] L9G[19]
+.connect L8G[21] L9G[21]
+.connect L6G[23] L9G[23]
+.connect L8G[25] L9G[25]
+.connect L7G[27] L9G[27]
+.connect L8G[29] L9G[29]
+.connect L5G[31] L9G[31]
+
+* Si = Ai xor Bi xor Cin,i -> Pi xor Cin,i
+Xsum L9G[31:0] P[32:1] S[31:0] xor2
+
+
+.connect S[31] n
+
+* Z Flag returns one when each S is = 0
+Xz1 S[7:0] S[15:8] S[23:16] S[31:24] z1[7:0] nor4 	//use NOR cause output 0 if any got 1; if no 1s, output 1
+Xz2 z1[1:0] z1[3:2] z1[5:4] z1[7:6] z2[1:0] nand4  	//reduce till 2 values: output 1 if any got 0 
+Xz3 z2[1] z2[0] z nor2 					//return z=1 only if z2[1] and z2[0] are both 0 (ie if any S has 1)
+
+
+* V signal; V = A31 && XB31 && _S31 || _A31 && _XB31 && S31
+* using De Morgan's Law, change the and3s to nand3s and the or2 to nand2
+Xv1 S[31] iS31 inverter
+Xv2 A[31] iA31 inverter
+Xv3 XB[31] iXB31 inverter
+Xv4 A[31] XB[31] iS31 v1 nand3
+Xv5 iA31 iXB31 S[31] v2 nand3
+Xv6 v1 v2 V nand2
+
+.ends
+
+
+
+
+

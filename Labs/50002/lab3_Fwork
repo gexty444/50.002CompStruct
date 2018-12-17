@@ -1,0 +1,99 @@
+.include "50002/nominal.jsim"
+.include "50002/stdcell.jsim"
+.include "50002/lab3checkoff_6.jsim"
+
+
+.subckt alu ALUFN[5:0] A[31:0] B[31:0] alu[31:0] z v n
+Xadd ALUFN[0] A[31:0] B[31:0] s[31:0] z v n adder32
+Xboole ALUFN[3:0] A[31:0] B[31:0] boole[31:0] boole32
+Xshift ALUFN[1:0] A[31:0] B[4:0] shift[31:0] shift32
+Xcmp ALUFN[2:1] z v n cmp[31:0] compare32
+Xmux ALUFN[5]#32 ALUFN[4]#32 s[31:0] shift[31:0] boole[31:0] cmp[31:0] alu[31:0] mux4
+.ends
+
+
+************************************
+.subckt shift32 ALUFN[1:0] A[31:0] B[4:0] shift[31:0]
+* leftshifting
+Xb41 B[4]#16 A[31:16] A[15:0] W[31:16] mux2
+Xb42 B[4]#16 A[15:0] 0#16 W[15:0] mux2
+Xb31 B[3]#24 W[31:8] W[23:0] X[31:8] mux2
+Xb32 B[3]#8 W[7:0] 0#8 X[7:0] mux2
+Xb21 B[2]#28 X[31:4] X[27:0] Y[31:4] mux2
+Xb22 B[2]#4 X[3:0] 0#4 Y[3:0] mux2
+Xb11 B[1]#30 Y[31:2] Y[29:0] Z[31:2] mux2
+Xb12 B[1]#2 Y[1:0] 0#2 Z[1:0] mux2
+Xb01 B[0]#31 Z[31:1] Z[30:0] SL[31:1] mux2
+Xb02 B[0] Z[0] 0 SL[0] mux2
+
+* rightshifting
+Xrb41 B[4]#16 A[31:16] 0#16 WR[31:16] mux2
+Xrb42 B[4]#16 A[15:0] A[31:16] WR[15:0] mux2
+Xrb31 B[3]#8 WR[31:24] 0#8 XR[31:24] mux2
+Xrb32 B[3]#24 WR[23:0] WR[31:8] XR[23:0] mux2
+Xrb21 B[2]#4 XR[31:28] 0#4 YR[31:28] mux2
+Xrb22 B[2]#28 XR[27:0] XR[31:4] YR[27:0] mux2
+Xrb11 B[1]#2 YR[31:30] 0#2 ZR[31:30] mux2
+Xrb12 B[1]#30 YR[29:0] YR[31:2] ZR[29:0] mux2
+Xrb01 B[0] ZR[31] 0 SR[31] mux2
+Xrb02 B[0]#31 ZR[30:0] ZR[31:1] SR[30:0] mux2
+
+* rightshifting w signext (same thing except 0 becomes the most significant bit)
+Xrab41 B[4]#16 A[31:16] A[31]#16 WA[31:16] mux2
+Xrab42 B[4]#16 A[15:0] A[31:16] WA[15:0] mux2
+Xrab31 B[3]#8 WA[31:24] WA[31]#8 XA[31:24] mux2
+Xrab32 B[3]#24 WA[23:0] WA[31:8] XA[23:0] mux2
+Xrab21 B[2]#4 XA[31:28] XA[31]#4 YA[31:28] mux2
+Xrab22 B[2]#28 XA[27:0] XA[31:4] YA[27:0] mux2
+Xrab11 B[1]#2 YA[31:30] YA[31]#2 ZA[31:30] mux2
+Xrab12 B[1]#30 YA[29:0] YA[31:2] ZA[29:0] mux2
+Xrab01 B[0] ZA[31] ZA[31] SRA[31] mux2
+Xrab02 B[0]#31 ZA[30:0] ZA[31:1] SRA[30:0] mux2
+
+*combine allllll
+Xfin ALUFN[1]#32 ALUFN[0]#32 SL[31:0] 0#32 SR[31:0] SRA[31:0] shift[31:0] mux4
+
+.ends
+
+********************************************
+.subckt boole32 ALUFN[3:0] A[31:0] B[31:0] boole[31:0]
+Xmux A[31:0] B[31:0] ALUFN[0]#32 ALUFN[1]#32 ALUFN[2]#32 ALUFN[3]#32 boole[31:0] mux4   
+.ends
+
+*******************************************
+
+.subckt compare32 ALUFN[2:1] z v n cmp[31:0]
+.connect 0 cmp[31:1]
+Xhalp n v nxorv xor2 		//nXORv
+Xhalp2 z nxorv zornxorv or2 	//z+ nXORv
+Xfin ALUFN[2] ALUFN[1] 0 nxorv z zornxorv cmp[0] mux4
+.ends
+
+***************************************
+
+.subckt adder32 ALUFN[0] A[31:0] B[31:0] s[31:0] z v n
+Xxor ALUFN[0]#32 B[31:0] res[31:0] xor2
+Xadd1 A[0] res[0] ALUFN[0] s[0] c[0] FA
+Xaddx A[31:1] res[31:1] c[30:0] s[31:1] c[31:1] FA
+Xv1 s[31] snot inverter
+Xv2 A[31] res[31] snot v1 and3
+Xv3 A[31] anot inverter
+Xv4 res[31] bnot inverter
+Xv5 anot bnot s[31] v2 and3
+Xv6 v1 v2 v or2
+.connect s[31] n
+Xz1 s[7:0] s[15:8] s[23:16] s[31:24] z1[7:0] or4 	//use OR cause output 1 if any got 1
+Xz2 z1[1:0] z1[3:2] z1[5:4] z1[7:6] z2[1:0] or4  	//reduce till 2 values
+Xz3 z2[1] z2[0] z nor2 					//use nor cause output 1 only if all 0.
+.ends
+
+
+* Full Adder Module
+.subckt FA a b ci s co
+Xxor1 a b 1 xor2
+Xxor2 1 ci s xor2
+Xnand1 a b 2 nand2
+Xnand2 a ci 3 nand2
+Xnand3 b ci 4 nand2
+Xnand4 2 3 4 co nand3
+.ends

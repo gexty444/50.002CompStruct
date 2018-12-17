@@ -1,0 +1,104 @@
+.include "50002/nominal.jsim"
+.include "50002/stdcell.jsim"
+.include "50002/checkoff2d/checkoff2d/2dcheckoff_3ns.jsim"
+
+* calculate P & G for a given set of A & B
+.subckt makePG A B P G
+Xmake1 A B P xor2
+Xmake2 A B G and2
+.ends
+
+
+* Black cell switch and->or to nand->nand; Ga needs to be inv
+.subckt black Ga Pa Gb Pb G P
+Xid0 Ga IGa inverter
+Xid1 Pa Gb X nand2
+Xid2 X IGa G nand2
+Xid3 Pa Pb P and2
+.ends
+
+
+* Grey cell switch and->or to nand->nand; Ga needs to be inv
+.subckt grey Ga Pa Gb G
+Xid0 Ga IGa inverter
+Xid1 Gb Pa X nand2
+Xid2 IGa X G nand2
+.ends
+
+*prevents tristate errors 
+.subckt knex a b
+.connect a b
+.ends
+
+
+
+
+* Adder Function
+.subckt adder32 op0 A[31:0] B[31:0] S[31:0] z v n
+
+*Selects add or subtract
+*Xid s d0 d1 z mux2
+XinvB B[31:0] Binv[31:0] inverter
+XselB op0#32 B[31:0] Binv[31:0] XB[31:0] mux2
+
+* Make P[0]
+XmakeP A[0] XB[0] P[0] preG makePG
+*Make G[0]
+XmakeG preG P[0] op0 G[0] grey
+
+*make G[31:1] and P[31:1] 
+XmakePG A[31:1] XB[31:1] P[31:1] G[31:1] makePG
+
+* Stage 1
+* 30 Black: [31:2]; 1 Grey [1]; 1 None [0]
+XS1conn G[0] S1G[0] knex
+XS1G G[1] P[1] G[0] S1G[1] grey
+XS1B G[31:2] P[31:2] G[30:1] P[30:1] S1G[31:2] S1P[31:2] black
+
+* Stage 2
+* 28 Black: [31:4]; 2 Grey [3:2]; 2 None [1:0]
+XS2conn S1G[1:0] S2G[1:0] knex
+XS2G S1G[3:2] S1P[3:2] S1G[1:0] S2G[3:2] grey
+XS2B S1G[31:4] S1P[31:4] S1G[29:2] S1P[29:2] S2G[31:4] S2P[31:4] black
+
+* Stage 3
+*24 Black: [31:8]; 4 Grey [7:4]; 4 None [3:0]
+XS3conn S2G[3:0] S3G[3:0] knex
+XS3G S2G[7:4] S2P[7:4] S2G[3:0] S3G[7:4] grey
+XS3B S2G[31:8] S2P[31:8] S2G[27:4] S2P[27:4] S3G[31:8] S3P[31:8] black
+
+* Stage 4
+* 16 Black: [31:16]; 8 Grey [15:8]; 8 None [7:0]
+XS4conn S3G[7:0] S4G[7:0] knex
+XS4G S3G[15:8] S3P[15:8] S3G[7:0] S4G[15:8] grey
+XS4B S3G[31:16] S3P[31:16] S3G[23:8] S3P[23:8] S4G[31:16] S4P[31:16] black
+
+* Stage 5
+* 0 Black: []; 16 Grey [31:16]; 16 None [15:0]
+XS5conn S4G[15:0] S5G[15:0] knex
+XS5G S4G[31:16] S4P[31:16] S4G[15:0] S5G[31:16] grey
+
+* Final
+* Si = Ai xor Bi xor Cin,i -> Pi xor Cin,i
+Xsum P[0] op0 S[0] xor2
+Xsum1 P[31:1] S5G[30:0] S[31:1] xor2
+
+* Z =  1 when all zero; use nor4/nand4 to keep reducing gates
+* fastest way is nor4, nand4, nor2 architecture
+Xz1 S[7:0] S[15:8] S[23:16] S[31:24] z1[7:0] nor4 	//use NOR cause output 0 if any got 1; if no 1s, output 1
+Xz2 z1[1:0] z1[3:2] z1[5:4] z1[7:6] z2[1:0] nand4  	//reduce till 2 values: output 1 if any got 0 
+Xz3 z2[1] z2[0] z nor2 					//return z=1 only if z2[1] and z2[0] are both 0 (ie if any S has 1)
+
+* V signal; V = A31 && XB31 && _S31 || _A31 && _XB31 && S31
+* using De Morgan's Law, change the and3s to nand3s and the or2 to nand2
+Xv1 S[31] iS31 inverter
+Xv2 A[31] iA31 inverter
+Xv3 XB[31] iXB31 inverter
+Xv4 A[31] XB[31] iS31 v1 nand3
+Xv5 iA31 iXB31 S[31] v2 nand3
+Xv6 v1 v2 V nand2
+
+*N = 1 when S is negative
+.connect S[31] n
+
+.ends
