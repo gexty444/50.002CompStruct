@@ -1,6 +1,6 @@
-.include "C:/Users/It'sMine/Downloads/50002/nominal.jsim" 
-.include "C:/Users/It'sMine/Downloads/50002/stdcell.jsim" 
-.include "C:/Users/It'sMine/Downloads/50002/lab6checkoff.jsim"
+.include "50002/nominal.jsim" 
+.include "50002/stdcell.jsim" 
+.include "50002/lab6checkoff.jsim"
 
 * Full Adder Module
 .subckt FA a b ci s co
